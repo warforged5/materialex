@@ -6,14 +6,14 @@ import 'package:flutter/material.dart';
 // import 'demos/carousel_demo.dart';
 // import 'demos/common_buttons_demo.dart';
 // import 'demos/extended_fab_demo.dart';
-import 'demos/fabdemo.dart'; // We have this one implemented
+import 'demos/fabdemo.dart';
 // import 'demos/fabs_demo.dart';
 // import 'demos/icon_buttons_demo.dart';
-// import 'demos/loading_indicator_demo.dart';
+import 'demos/wavydemo.dart';
 // import 'demos/navigation_bar_demo.dart';
 // import 'demos/navigation_rail_demo.dart';
 // import 'demos/progress_indicators_demo.dart';
-// import 'demos/split_button_demo.dart';
+import 'demos/splitdemo.dart';
 // import 'demos/toolbars_demo.dart';
 
 void main() {
@@ -125,10 +125,10 @@ class _DemoHomePageState extends State<DemoHomePage> {
       title: 'Loading Indicator',
       description: 'New loading and progress indication patterns',
       icon: Icons.hourglass_empty,
-      status: ComponentStatus.planned,
+      status: ComponentStatus.implemented,
       isNew: true,
       route: '/loading-indicator',
-      builder: (context) => const PlaceholderDemoPage(title: 'Loading Indicator'),
+      builder: (context) => const WavyProgressIndicatorDemo(),
     ),
     DemoComponent(
       title: 'Navigation Bar',
@@ -158,10 +158,10 @@ class _DemoHomePageState extends State<DemoHomePage> {
       title: 'Split Button',
       description: 'New split button component for multiple actions',
       icon: Icons.call_split,
-      status: ComponentStatus.planned,
+      status: ComponentStatus.implemented,
       isNew: true,
       route: '/split-button',
-      builder: (context) => const PlaceholderDemoPage(title: 'Split Button'),
+      builder: (context) => const SplitButtonsDemo(),
     ),
     DemoComponent(
       title: 'Toolbars',

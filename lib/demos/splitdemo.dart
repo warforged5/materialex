@@ -1,7 +1,7 @@
 // lib/demo/split_buttons_demo.dart
 
 import 'package:flutter/material.dart';
-import '../widgets/split_buttons.dart';
+import '../../widgets/split_buttons.dart';
 
 
 class SplitButtonsDemo extends StatefulWidget {

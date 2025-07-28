@@ -1,6 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
-import '../widgets/wavy_progress_indicators.dart';
+import '../../widgets/wavy_progress_indicators.dart';
 
 class WavyProgressIndicatorDemo extends StatefulWidget {
   const WavyProgressIndicatorDemo({super.key});
