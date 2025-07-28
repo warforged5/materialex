@@ -118,7 +118,6 @@ class SplitButtonDefaults {
     return extraLargeLeadingButtonContentPadding;
   }
 
-  /// Get trailing button content padding for a given height
   static EdgeInsets trailingButtonContentPaddingFor(double buttonHeight) {
     if (buttonHeight <= (extraSmallContainerHeight + smallContainerHeight) / 2) return extraSmallTrailingButtonContentPadding;
     if (buttonHeight <= (smallContainerHeight + mediumContainerHeight) / 2) return smallTrailingButtonContentPadding;
@@ -126,7 +125,6 @@ class SplitButtonDefaults {
     if (buttonHeight <= (largeContainerHeight + extraLargeContainerHeight) / 2) return largeTrailingButtonContentPadding;
     return extraLargeTrailingButtonContentPadding;
   }
-
   /// Get leading button icon size for a given height
   static double leadingButtonIconSizeFor(double buttonHeight) {
     if (buttonHeight <= (extraSmallContainerHeight + smallContainerHeight) / 2) return extraSmallLeadingIconSize;
@@ -254,16 +252,26 @@ class SplitButtonDefaults {
     double height = smallContainerHeight,
     bool enabled = true,
   }) {
-    return leadingButton(
-      onPressed: onPressed,
-      child: child,
-      height: height,
-      enabled: enabled,
-      style: FilledButton.styleFrom(
-        backgroundColor: Theme.of(
-            WidgetsBinding.instance.rootElement! as BuildContext).colorScheme.secondaryContainer,
-        foregroundColor: Theme.of(
-            WidgetsBinding.instance.rootElement! as BuildContext).colorScheme.onSecondaryContainer,
+    return Builder(
+      builder: (context) => leadingButton(
+        onPressed: onPressed,
+        child: child,
+        height: height,
+        enabled: enabled,
+        style: ButtonStyle(
+          backgroundColor: WidgetStateProperty.resolveWith((states) {
+            if (states.contains(WidgetState.disabled)) {
+              return Theme.of(context).colorScheme.onSurface.withOpacity(0.12);
+            }
+            return Theme.of(context).colorScheme.secondaryContainer;
+          }),
+          foregroundColor: WidgetStateProperty.resolveWith((states) {
+            if (states.contains(WidgetState.disabled)) {
+              return Theme.of(context).colorScheme.onSurface.withOpacity(0.38);
+            }
+            return Theme.of(context).colorScheme.onSecondaryContainer;
+          }),
+        ),
       ),
     );
   }
@@ -276,17 +284,27 @@ class SplitButtonDefaults {
     bool enabled = true,
     bool checked = false,
   }) {
-    return trailingButton(
-      onPressed: onPressed,
-      child: child,
-      height: height,
-      enabled: enabled,
-      checked: checked,
-      style: FilledButton.styleFrom(
-        backgroundColor: Theme.of( 
-            WidgetsBinding.instance.rootElement! as BuildContext).colorScheme.secondaryContainer,
-        foregroundColor: Theme.of(
-            WidgetsBinding.instance.rootElement! as BuildContext).colorScheme.onSecondaryContainer,
+    return Builder(
+      builder: (context) => trailingButton(
+        onPressed: onPressed,
+        child: child,
+        height: height,
+        enabled: enabled,
+        checked: checked,
+        style: ButtonStyle(
+          backgroundColor: WidgetStateProperty.resolveWith((states) {
+            if (states.contains(WidgetState.disabled)) {
+              return Theme.of(context).colorScheme.onSurface.withOpacity(0.12);
+            }
+            return Theme.of(context).colorScheme.secondaryContainer;
+          }),
+          foregroundColor: WidgetStateProperty.resolveWith((states) {
+            if (states.contains(WidgetState.disabled)) {
+              return Theme.of(context).colorScheme.onSurface.withOpacity(0.38);
+            }
+            return Theme.of(context).colorScheme.onSecondaryContainer;
+          }),
+        ),
       ),
     );
   }
@@ -298,15 +316,36 @@ class SplitButtonDefaults {
     double height = smallContainerHeight,
     bool enabled = true,
   }) {
-    return leadingButton(
-      onPressed: onPressed,
-      child: child,
-      height: height,
-      enabled: enabled,
-      style: OutlinedButton.styleFrom(),
+    return Builder(
+      builder: (context) => leadingButton(
+        onPressed: onPressed,
+        child: child,
+        height: height,
+        enabled: enabled,
+        style: ButtonStyle(
+          backgroundColor: WidgetStateProperty.all(Colors.transparent),
+          foregroundColor: WidgetStateProperty.resolveWith((states) {
+            if (states.contains(WidgetState.disabled)) {
+              return Theme.of(context).colorScheme.onSurface.withOpacity(0.38);
+            }
+            return Theme.of(context).colorScheme.primary;
+          }),
+          side: WidgetStateProperty.resolveWith((states) {
+            if (states.contains(WidgetState.disabled)) {
+              return BorderSide(
+                color: Theme.of(context).colorScheme.onSurface.withOpacity(0.12),
+                width: 1.0,
+              );
+            }
+            return BorderSide(
+              color: Theme.of(context).colorScheme.outline,
+              width: 1.0,
+            );
+          }),
+        ),
+      ),
     );
   }
-
   /// Creates an outlined trailing button
   static Widget outlinedTrailingButton({
     required VoidCallback onPressed,
@@ -764,9 +803,11 @@ class _SplitTrailingButtonState extends State<SplitTrailingButton>
                 maxWidth: widget.checked ? widget.height : double.infinity,
               ),
               decoration: ShapeDecoration(
-                shape: border != null && currentShape is RoundedRectangleBorder
-                    ? currentShape.copyWith(side: border)
-                    : currentShape,
+                shape: border != null 
+              ? (currentShape is CircleBorder 
+                  ? CircleBorder(side: border)
+                  : currentShape.copyWith(side: border))
+              : currentShape,
                 color: _getBackgroundColor(context),
                 shadows: elevation,
               ),
