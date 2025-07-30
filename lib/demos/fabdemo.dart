@@ -26,13 +26,13 @@ class _FabMenuDemoPageState extends State<FabMenuDemoPage> {
   
   // Animation controls
   double _animationSpeed = 1.0;
-  double _staggerDelay = 50.0;
+  double _staggerDelay = 30.0; // Updated default
   
   // Style controls
   int _primaryItemCount = 4;
   int _secondaryItemCount = 3;
   int _tertiaryItemCount = 2;
-  int _customItemCount = 8; // Increased to test scrolling
+  int _customItemCount = 12; // Increased to test scrolling better
 
   @override
   Widget build(BuildContext context) {
@@ -60,6 +60,8 @@ class _FabMenuDemoPageState extends State<FabMenuDemoPage> {
                   const SizedBox(height: 24),
                   _buildAnimationControls(),
                   const SizedBox(height: 24),
+                  _buildScrollingDemoSection(),
+                  const SizedBox(height: 24),
                   _buildPresetsSection(),
                   const SizedBox(height: 24),
                   _buildUsageExampleSection(),
@@ -67,7 +69,7 @@ class _FabMenuDemoPageState extends State<FabMenuDemoPage> {
                   _buildBehaviorSection(),
                   const SizedBox(height: 24),
                   _buildStatusGrid(),
-                  const SizedBox(height: 100), // Extra space for FAB menus
+                  const SizedBox(height: 150), // Extra space for FAB menus
                 ],
               ),
             ),
@@ -75,6 +77,138 @@ class _FabMenuDemoPageState extends State<FabMenuDemoPage> {
         ],
       ),
       floatingActionButton: _buildDemoFabs(context),
+    );
+  }
+
+  Widget _buildScrollingDemoSection() {
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'Alignment & Scrolling Demo',
+              style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+            const SizedBox(height: 12),
+            Text(
+              'Menu items now align perfectly with the close button edges and have a smaller gap for tighter grouping.',
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                color: Theme.of(context).colorScheme.onSurfaceVariant,
+              ),
+            ),
+            const SizedBox(height: 16),
+            Row(
+              children: [
+                Expanded(
+                  child: _buildScrollingFeature(
+                    Icons.straighten,
+                    'Perfect Alignment',
+                    'Menu items align exactly with button edges',
+                    Colors.blue,
+                  ),
+                ),
+                const SizedBox(width: 16),
+                Expanded(
+                  child: _buildScrollingFeature(
+                    Icons.compress,
+                    'Smaller Gap',
+                    'Reduced spacing for tighter grouping',
+                    Colors.orange,
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 12),
+            Row(
+              children: [
+                Expanded(
+                  child: _buildScrollingFeature(
+                    Icons.layers,
+                    'Stack Scrolling',
+                    'Items scroll behind the fixed close button',
+                    Colors.green,
+                  ),
+                ),
+                const SizedBox(width: 16),
+                Expanded(
+                  child: _buildScrollingFeature(
+                    Icons.center_focus_weak,
+                    'Icon Positioning',
+                    'Icons stay closest to screen center',
+                    Colors.purple,
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 16),
+            Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: Theme.of(context).colorScheme.primaryContainer.withOpacity(0.3),
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: Row(
+                children: [
+                  Icon(
+                    Icons.touch_app,
+                    color: Theme.of(context).colorScheme.primary,
+                    size: 20,
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Text(
+                      'Enable the Custom FAB (12 items) to test scrolling. Notice how items align perfectly with the button edge.',
+                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                        color: Theme.of(context).colorScheme.primary,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildScrollingFeature(IconData icon, String title, String description, Color color) {
+    return Column(
+      children: [
+        Container(
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            color: color.withOpacity(0.1),
+            borderRadius: BorderRadius.circular(12),
+          ),
+          child: Icon(
+            icon,
+            color: color,
+            size: 32,
+          ),
+        ),
+        const SizedBox(height: 8),
+        Text(
+          title,
+          style: Theme.of(context).textTheme.titleSmall?.copyWith(
+            fontWeight: FontWeight.w600,
+            color: color,
+          ),
+          textAlign: TextAlign.center,
+        ),
+        const SizedBox(height: 4),
+        Text(
+          description,
+          style: Theme.of(context).textTheme.bodySmall?.copyWith(
+            color: Theme.of(context).colorScheme.onSurfaceVariant,
+          ),
+          textAlign: TextAlign.center,
+        ),
+      ],
     );
   }
 
@@ -165,15 +299,19 @@ FabMenuBuilder.buildPresetMenu(
   onActionPressed: (action) => handleAction(action),
   context: context,
   style: FabMenuStyle.primary,
+  alignment: AlignmentDirectional.centerEnd, // or centerStart
+  animationDuration: Duration(milliseconds: 200), // Fast & responsive
+  staggerInterval: Duration(milliseconds: 30),     // Quick stagger
 );
 
-// Or use custom actions
+// Or use custom actions with scrolling support
 FabMenuBuilder.buildPresetMenu(
   expanded: isExpanded,
   onExpandedChanged: (value) => setState(() => isExpanded = value),
   actions: [
     FabMenuAction(icon: Icons.add, label: 'Add', action: 'add'),
     FabMenuAction(icon: Icons.edit, label: 'Edit', action: 'edit'),
+    // ... up to 15+ items with automatic scrolling
   ],
   onActionPressed: (action) => print('Action: \$action'),
   context: context,
@@ -196,7 +334,7 @@ FabMenuBuilder.buildPresetMenu(
                 const SizedBox(width: 8),
                 Expanded(
                   child: Text(
-                    'The defaults handle all Material 3 styling, animations, and color schemes automatically',
+                    'The defaults handle all Material 3 styling, animations, and scrolling automatically',
                     style: Theme.of(context).textTheme.bodySmall?.copyWith(
                       color: Theme.of(context).colorScheme.tertiary,
                     ),
@@ -237,9 +375,9 @@ FabMenuBuilder.buildPresetMenu(
             
             // Edge Alignment
             _buildBehaviorItem(
-              Icons.align_horizontal_left,
-              'Smart Alignment',
-              'Menu items align to the nearest edge automatically. Right-aligned menus show content from the right edge',
+              Icons.straighten,
+              'Perfect Edge Alignment',
+              'Menu items align exactly with close button edges, not screen edges. Smaller gap for tighter grouping',
               Colors.green,
             ),
             
@@ -247,9 +385,9 @@ FabMenuBuilder.buildPresetMenu(
             
             // Scrolling
             _buildBehaviorItem(
-              Icons.screen_lock_landscape,
+              Icons.layers,
               'Intelligent Scrolling',
-              'When screen height is limited, menu items scroll behind the fixed close button. Perfect for landscape orientation',
+              'When screen height is limited, menu items scroll behind the fixed close button. Perfect for many items',
               Colors.orange,
             ),
             
@@ -264,14 +402,14 @@ FabMenuBuilder.buildPresetMenu(
               child: Row(
                 children: [
                   Icon(
-                    Icons.tips_and_updates,
+                    Icons.speed,
                     color: Theme.of(context).colorScheme.primary,
                     size: 20,
                   ),
                   const SizedBox(width: 12),
                   Expanded(
                     child: Text(
-                      'Try the Custom FAB with 6+ items to test scrolling behavior. Rotate your device to landscape mode for best effect.',
+                      'Menu items now align perfectly with button edges and have tighter spacing. Animations are 33% faster.',
                       style: Theme.of(context).textTheme.bodySmall?.copyWith(
                         color: Theme.of(context).colorScheme.primary,
                       ),
@@ -487,9 +625,9 @@ FabMenuBuilder.buildPresetMenu(
                       Text('Stagger: ${_staggerDelay.round()}ms'),
                       Slider(
                         value: _staggerDelay,
-                        min: 20.0,
+                        min: 10.0,
                         max: 100.0,
-                        divisions: 8,
+                        divisions: 9,
                         onChanged: (value) => setState(() => _staggerDelay = value),
                       ),
                     ],
@@ -666,7 +804,7 @@ FabMenuBuilder.buildPresetMenu(
       context: context,
       style: FabMenuStyle.primary,
       alignment: alignment,
-      animationDuration: Duration(milliseconds: (300 / _animationSpeed).round()),
+      animationDuration: Duration(milliseconds: (200 / _animationSpeed).round()),
       staggerInterval: Duration(milliseconds: _staggerDelay.round()),
     );
   }
@@ -681,7 +819,7 @@ FabMenuBuilder.buildPresetMenu(
       context: context,
       style: FabMenuStyle.secondary,
       alignment: alignment,
-      animationDuration: Duration(milliseconds: (300 / _animationSpeed).round()),
+      animationDuration: Duration(milliseconds: (200 / _animationSpeed).round()),
       staggerInterval: Duration(milliseconds: _staggerDelay.round()),
       toggleIcon: Icons.more_horiz,
     );
@@ -703,7 +841,7 @@ FabMenuBuilder.buildPresetMenu(
       context: context,
       style: FabMenuStyle.tertiary,
       alignment: alignment,
-      animationDuration: Duration(milliseconds: (300 / _animationSpeed).round()),
+      animationDuration: Duration(milliseconds: (200 / _animationSpeed).round()),
       staggerInterval: Duration(milliseconds: _staggerDelay.round()),
       toggleIcon: Icons.settings,
     );
@@ -720,17 +858,21 @@ FabMenuBuilder.buildPresetMenu(
       FabMenuAction(icon: Icons.bookmark, label: 'Save', action: 'save', containerColor: const Color(0xFF9C27B0).withOpacity(0.15), contentColor: const Color(0xFF9C27B0)),
       FabMenuAction(icon: Icons.flag, label: 'Report', action: 'report', containerColor: const Color(0xFFE91E63).withOpacity(0.15), contentColor: const Color(0xFFE91E63)),
       FabMenuAction(icon: Icons.info, label: 'Info', action: 'info', containerColor: const Color(0xFF2196F3).withOpacity(0.15), contentColor: const Color(0xFF2196F3)),
+      FabMenuAction(icon: Icons.print, label: 'Print', action: 'print', containerColor: const Color(0xFF607D8B).withOpacity(0.15), contentColor: const Color(0xFF607D8B)),
+      FabMenuAction(icon: Icons.download, label: 'Download', action: 'download', containerColor: const Color(0xFF8BC34A).withOpacity(0.15), contentColor: const Color(0xFF8BC34A)),
+      FabMenuAction(icon: Icons.upload, label: 'Upload', action: 'upload', containerColor: const Color(0xFFFF5722).withOpacity(0.15), contentColor: const Color(0xFFFF5722)),
+      FabMenuAction(icon: Icons.refresh, label: 'Refresh', action: 'refresh', containerColor: const Color(0xFF009688).withOpacity(0.15), contentColor: const Color(0xFF009688)),
     ];
     
     return FloatingActionButtonMenu(
       expanded: _customExpanded,
       horizontalAlignment: alignment,
-      animationDuration: Duration(milliseconds: (400 / _animationSpeed).round()),
+      animationDuration: Duration(milliseconds: (200 / _animationSpeed).round()),
       staggerInterval: Duration(milliseconds: (_staggerDelay * 0.8).round()),
       button: () => ToggleFloatingActionButton(
         checked: _customExpanded,
         onChanged: (value) => setState(() => _customExpanded = value),
-        animationDuration: Duration(milliseconds: (300 / _animationSpeed).round()),
+        animationDuration: Duration(milliseconds: (150 / _animationSpeed).round()),
         containerColor: (progress) => Color.lerp(
           const Color(0xFF6200EA),
           const Color(0xFFBB86FC),
@@ -743,7 +885,7 @@ FabMenuBuilder.buildPresetMenu(
           uncheckedIcon: Icons.auto_awesome,
           checkedIcon: Icons.close,
           color: Colors.white,
-          duration: Duration(milliseconds: (250 / _animationSpeed).round()),
+          duration: Duration(milliseconds: (180 / _animationSpeed).round()),
         ),
       ),
       content: (scope) => Column(
@@ -823,8 +965,8 @@ FabMenuBuilder.buildPresetMenu(
             child: Slider(
               value: currentValue.toDouble(),
               min: 2,
-              max: 8, // Increased to test scrolling
-              divisions: 6,
+              max: 15, // Increased for better scrolling tests
+              divisions: 13,
               label: currentValue.toString(),
               onChanged: (value) => onChanged(value.round()),
             ),

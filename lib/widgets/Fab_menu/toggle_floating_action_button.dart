@@ -20,7 +20,7 @@ class ToggleFloatingActionButton extends StatefulWidget {
     this.containerColor,
     this.containerSize,
     this.containerCornerRadius,
-    this.animationDuration = const Duration(milliseconds: 200),
+    this.animationDuration = const Duration(milliseconds: 150), // Faster default
   });
 
   @override
@@ -39,7 +39,7 @@ class _ToggleFloatingActionButtonState extends State<ToggleFloatingActionButton>
       duration: widget.animationDuration,
       vsync: this,
     );
-    _animation = CurvedAnimation(parent: _controller, curve: Curves.easeInOut);
+    _animation = CurvedAnimation(parent: _controller, curve: Curves.fastOutSlowIn); // Faster curve
     
     if (widget.checked) {
       _controller.value = 1.0;
@@ -91,12 +91,12 @@ class _ToggleFloatingActionButtonState extends State<ToggleFloatingActionButton>
         // Create transformation matrix for morphing effect
         final transformMatrix = Matrix4.identity();
         
-        // Scale down slightly during transition for morphing effect
-        final scaleValue = 1.0 - (progress * 0.1); // Slight shrink during transition
+        // Scale down slightly during transition for morphing effect (less dramatic)
+        final scaleValue = 1.0 - (progress * 0.05); // Reduced from 0.1 to 0.05 for subtler effect
         transformMatrix.scale(scaleValue);
         
-        // Add a subtle rotation for more dynamic feel
-        transformMatrix.rotateZ(progress * 0.1); // Very subtle rotation
+        // Add a subtle rotation for more dynamic feel (reduced)
+        transformMatrix.rotateZ(progress * 0.05); // Reduced from 0.1 for subtler effect
 
         return Transform(
           alignment: Alignment.topRight, // Originate from top-right corner
@@ -105,7 +105,7 @@ class _ToggleFloatingActionButtonState extends State<ToggleFloatingActionButton>
             width: containerSize,
             height: containerSize,
             child: Material(
-              elevation: 6.0 + (progress * 2.0), // Slightly increase elevation when expanded
+              elevation: 6.0 + (progress * 1.0), // Reduced elevation change
               color: containerColor,
               borderRadius: BorderRadius.circular(containerCornerRadius),
               child: InkWell(

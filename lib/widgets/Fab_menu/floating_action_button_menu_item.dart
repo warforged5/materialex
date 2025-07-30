@@ -12,6 +12,7 @@ class FloatingActionButtonMenuItem extends StatefulWidget {
   final int totalItems;
   final Animation<double> staggerAnimation;
   final Duration staggerInterval;
+  final AlignmentDirectional horizontalAlignment; // Add this parameter
 
   const FloatingActionButtonMenuItem({
     super.key,
@@ -22,6 +23,7 @@ class FloatingActionButtonMenuItem extends StatefulWidget {
     required this.totalItems,
     required this.staggerAnimation,
     required this.staggerInterval,
+    required this.horizontalAlignment, // Add this parameter
     this.containerColor,
     this.contentColor,
   });
@@ -41,7 +43,7 @@ class _FloatingActionButtonMenuItemState extends State<FloatingActionButtonMenuI
   void initState() {
     super.initState();
     _itemController = AnimationController(
-      duration: const Duration(milliseconds: 250),
+      duration: const Duration(milliseconds: 180), // Faster item animation
       vsync: this,
     );
 
@@ -58,11 +60,11 @@ class _FloatingActionButtonMenuItemState extends State<FloatingActionButtonMenuI
       end: 1.0,
     ).animate(CurvedAnimation(
       parent: _itemController,
-      curve: const Interval(0.0, 0.7, curve: Curves.easeOut),
+      curve: const Interval(0.0, 0.6, curve: Curves.easeOut), // Faster fade
     ));
 
     _slideAnimation = Tween<Offset>(
-      begin: const Offset(0.3, 0),
+      begin: const Offset(0.2, 0), // Reduced slide distance for faster feel
       end: Offset.zero,
     ).animate(CurvedAnimation(
       parent: _itemController,
@@ -88,9 +90,9 @@ class _FloatingActionButtonMenuItemState extends State<FloatingActionButtonMenuI
         ? itemDelay 
         : reverseItemDelay;
     
-    // Calculate when this item should start animating (with stagger)
-    final animationStart = effectiveDelay * 0.6; // 60% of the animation is staggered
-    final animationEnd = animationStart + 0.4; // Each item takes 40% of total time
+    // Calculate when this item should start animating (with faster stagger)
+    final animationStart = effectiveDelay * 0.4; // Reduced from 0.6 for faster stagger
+    final animationEnd = animationStart + 0.6; // Each item takes 60% of total time
     
     final itemProgress = ((progress - animationStart) / (animationEnd - animationStart)).clamp(0.0, 1.0);
     
@@ -135,9 +137,8 @@ class _FloatingActionButtonMenuItemState extends State<FloatingActionButtonMenuI
     return AnimatedBuilder(
       animation: Listenable.merge([_scaleAnimation, _fadeAnimation, _slideAnimation]),
       builder: (context, child) {
-        // Determine the alignment based on the menu's horizontal alignment
-        final menuColumn = context.findAncestorWidgetOfExactType<FloatingActionButtonMenuItemColumn>();
-        final isLeftAligned = menuColumn?.horizontalAlignment == AlignmentDirectional.centerStart;
+        // Use the passed horizontal alignment
+        final isLeftAligned = widget.horizontalAlignment == AlignmentDirectional.centerStart;
         
         return Transform.scale(
           scale: _scaleAnimation.value,
@@ -165,48 +166,7 @@ class _FloatingActionButtonMenuItemState extends State<FloatingActionButtonMenuI
                       ),
                       child: Row(
                         mainAxisSize: MainAxisSize.min,
-                        mainAxisAlignment: isLeftAligned 
-                            ? MainAxisAlignment.start 
-                            : MainAxisAlignment.end,
-                        children: isLeftAligned 
-                            ? [
-                                // Left-aligned: text then icon
-                                Flexible(
-                                  child: DefaultTextStyle(
-                                    style: theme.textTheme.titleMedium!.copyWith(
-                                      color: effectiveContentColor,
-                                    ),
-                                    child: widget.text,
-                                  ),
-                                ),
-                                const SizedBox(width: FabMenuBaselineTokens.listItemIconLabelSpace),
-                                IconTheme(
-                                  data: IconThemeData(
-                                    color: effectiveContentColor,
-                                    size: FabMenuBaselineTokens.listItemIconSize,
-                                  ),
-                                  child: widget.icon,
-                                ),
-                              ]
-                            : [
-                                // Right-aligned: icon, then text
-                                IconTheme(
-                                  data: IconThemeData(
-                                    color: effectiveContentColor,
-                                    size: FabMenuBaselineTokens.listItemIconSize,
-                                  ),
-                                  child: widget.icon,
-                                ),
-                                const SizedBox(width: FabMenuBaselineTokens.listItemIconLabelSpace),
-                                Flexible(
-                                  child: DefaultTextStyle(
-                                    style: theme.textTheme.titleMedium!.copyWith(
-                                      color: effectiveContentColor,
-                                    ),
-                                    child: widget.text,
-                                  ),
-                                ),
-                              ],
+                        children: _buildChildren(isLeftAligned, effectiveContentColor, theme),
                       ),
                     ),
                   ),
@@ -217,5 +177,42 @@ class _FloatingActionButtonMenuItemState extends State<FloatingActionButtonMenuI
         );
       },
     );
+  }
+
+  List<Widget> _buildChildren(bool isLeftAligned, Color effectiveContentColor, ThemeData theme) {
+    // Fixed: Icons should always be closest to the center of the page
+    // For left-aligned menus: text (edge) -> icon (center)
+    // For right-aligned menus: icon (center) -> text (edge)
+    
+    final iconWidget = IconTheme(
+      data: IconThemeData(
+        color: effectiveContentColor,
+        size: FabMenuBaselineTokens.listItemIconSize,
+      ),
+      child: widget.icon,
+    );
+    
+    final textWidget = DefaultTextStyle(
+      style: theme.textTheme.titleMedium!.copyWith(
+        color: effectiveContentColor,
+      ),
+      child: widget.text,
+    );
+    
+    if (isLeftAligned) {
+      // Left-aligned: text (closer to left edge) -> icon (closer to center)
+      return [
+        textWidget,
+        const SizedBox(width: FabMenuBaselineTokens.listItemIconLabelSpace),
+        iconWidget,
+      ];
+    } else {
+      // Right-aligned: icon (closer to center) -> text (closer to right edge)
+      return [
+        iconWidget,
+        const SizedBox(width: FabMenuBaselineTokens.listItemIconLabelSpace),
+        textWidget,
+      ];
+    }
   }
 }

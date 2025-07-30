@@ -38,11 +38,11 @@ class FloatingActionButtonMenuDefaults {
     return Theme.of(context).colorScheme.onTertiaryContainer;
   }
 
-  /// Default animation duration for menu expansion/collapse
-  static const Duration animationDuration = Duration(milliseconds: 300);
+  /// Default animation duration for menu expansion/collapse (faster)
+  static const Duration animationDuration = Duration(milliseconds: 200);
 
-  /// Default stagger interval between menu items
-  static const Duration staggerInterval = Duration(milliseconds: 50);
+  /// Default stagger interval between menu items (faster)
+  static const Duration staggerInterval = Duration(milliseconds: 30);
 
   /// Default horizontal alignment for menu items
   static const AlignmentDirectional horizontalAlignment = AlignmentDirectional.centerEnd;
@@ -214,8 +214,8 @@ class ToggleFloatingActionButtonDefaults {
     );
   }
 
-  /// Default animation duration for toggle transitions
-  static const Duration animationDuration = Duration(milliseconds: 200);
+  /// Default animation duration for toggle transitions (faster)
+  static const Duration animationDuration = Duration(milliseconds: 150);
 }
 
 /// Utility class for creating animated icons in toggle FABs
@@ -228,7 +228,7 @@ class FabMenuIconAnimations {
     required IconData checkedIcon,
     Color? color,
     double baseSize = 24.0,
-    Duration duration = const Duration(milliseconds: 200),
+    Duration duration = const Duration(milliseconds: 150), // Faster default
   }) {
     return AnimatedSwitcher(
       duration: duration,
@@ -258,7 +258,7 @@ class FabMenuIconAnimations {
     double baseSize = 24.0,
     double sizeMultiplier = 1.2,
     double rotationTurns = 0.5,
-    Duration duration = const Duration(milliseconds: 200),
+    Duration duration = const Duration(milliseconds: 150), // Faster default
   }) {
     return AnimatedRotation(
       turns: scope.checkedProgress * rotationTurns,
@@ -278,7 +278,7 @@ class FabMenuIconAnimations {
     required IconData checkedIcon,
     Color? color,
     double baseSize = 24.0,
-    Duration duration = const Duration(milliseconds: 250),
+    Duration duration = const Duration(milliseconds: 180), // Faster default
   }) {
     // Create a shrink-expand effect during transition
     final scaleProgress = scope.checkedProgress < 0.5 
@@ -305,7 +305,7 @@ class FabMenuIconAnimations {
     required IconData checkedIcon,
     Color? color,
     double size = 24.0,
-    Duration duration = const Duration(milliseconds: 200),
+    Duration duration = const Duration(milliseconds: 150), // Faster default
   }) {
     return AnimatedContainer(
       duration: duration,
@@ -349,7 +349,7 @@ class FabMenuIconAnimations {
     required IconData checkedIcon,
     Color? color,
     double size = 24.0,
-    Duration duration = const Duration(milliseconds: 300),
+    Duration duration = const Duration(milliseconds: 200), // Slightly slower for smooth crossfade
   }) {
     return AnimatedCrossFade(
       firstChild: Icon(uncheckedIcon, color: color, size: size),
@@ -614,12 +614,14 @@ class FabMenuBuilder {
       button: () => ToggleFloatingActionButton(
         checked: expanded,
         onChanged: onExpandedChanged,
+        animationDuration: FloatingActionButtonMenuDefaults.animationDuration, // Use faster default
         containerColor: _getContainerColorFunction(context, style),
         content: (scope) => FabMenuIconAnimations.morphingIcon(
           scope,
           uncheckedIcon: toggleIcon,
           checkedIcon: closeIcon,
           color: _getIconColor(context, style, scope.checkedProgress),
+          duration: const Duration(milliseconds: 150), // Faster icon animation
         ),
       ),
       content: (scope) => Column(
