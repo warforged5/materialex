@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:materialex/widgets/Fab_menu/fab_menu_defaults.dart';
 import 'fab_menu_scope.dart';
 import 'floating_action_button_menu_item.dart';
 import 'fab_menu_tokens.dart';
@@ -105,7 +106,7 @@ class _FloatingActionButtonMenuState extends State<FloatingActionButtonMenu>
                     staggerInterval: widget.staggerInterval,
                     scrollController: _scrollController,
                     content: widget.content,
-                    buttonAlignment: widget.horizontalAlignment
+                    buttonAlignment: FloatingActionButtonMenuDefaults.horizontalAlignment,
                   );
                 },
               ),
@@ -171,25 +172,22 @@ class FloatingActionButtonMenuItemColumnState extends State<FloatingActionButton
     );
     
     // Align items exactly with the button - same positioning as the button
-    return Container(
-      width: double.infinity,
+    return SingleChildScrollView(
+      controller: widget.scrollController,
+      physics: widget.expanded ? const BouncingScrollPhysics() : const NeverScrollableScrollPhysics(),
       padding: EdgeInsets.only(
         left: widget.buttonAlignment == AlignmentDirectional.centerStart ? 16.0 : 0,
         right: widget.buttonAlignment == AlignmentDirectional.centerEnd ? 16.0 : 0,
         bottom: 8.0, // Minimal bottom padding for scrolling behind button
       ),
-      child: SingleChildScrollView(
-        controller: widget.scrollController,
-        physics: widget.expanded ? const BouncingScrollPhysics() : const NeverScrollableScrollPhysics(),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: widget.horizontalAlignment == AlignmentDirectional.centerStart
-              ? CrossAxisAlignment.start
-              : CrossAxisAlignment.end,
-          children: [
-            widget.content(scope),
-          ],
-        ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: widget.horizontalAlignment == AlignmentDirectional.centerStart
+            ? CrossAxisAlignment.start
+            : CrossAxisAlignment.end,
+        children: [
+          widget.content(scope),
+        ],
       ),
     );
   }
